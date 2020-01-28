@@ -89,6 +89,12 @@ function formListener(event) {
         case "newSquencesJobs":
             handleNewETL(event);
             break;
+        case "migrateBatch":
+            handleTitle(event);
+            break;
+        case "migrateSchema":
+            handleTitle(event);
+            break;
         case "alteredSquencesJobs":
             handleAlteredETL(event);
             break;
@@ -204,12 +210,14 @@ function handleAlteredDDLS(event) {
     document.getElementById("ddlsMigration").innerHTML = "";
     if (ddlsAltered != "") {
         for (let ddl in ddlsAltered) {
-            let listItem = document.createElement("li");
-            listItem.innerHTML = ddlsAltered[ddl];
-            document.getElementById("alteredDDLS").appendChild(listItem);
-            listItem = document.createElement("li");
-            listItem.innerHTML = ddlsAltered[ddl];
-            document.getElementById("ddlsMigration").appendChild(listItem);
+            if (!document.getElementById("migrateSchema").checked) {
+                let listItem = document.createElement("li");
+                listItem.innerHTML = ddlsAltered[ddl];
+                document.getElementById("alteredDDLS").appendChild(listItem);
+                listItem = document.createElement("li");
+                listItem.innerHTML = ddlsAltered[ddl];
+                document.getElementById("ddlsMigration").appendChild(listItem);
+            }
         }
     } else {
         let listItem = document.createElement("li");
@@ -225,6 +233,9 @@ function handleSpecialInstructions(event) {
     document.getElementById("specialInstructionsDoc").innerHTML = specialInstructions;
 }
 
+function handleMigrateBatch(event) {
+
+}
 
 
 function handleTitle(event) {
@@ -232,14 +243,21 @@ function handleTitle(event) {
     let ticketNumber = document.getElementById("ticketNumber").value;
     let releaseVersion = document.getElementById("releaseVersion").value;
     let server = "";
+    let database = "";
     let datamart = document.getElementById("datamartList").value;
     let enviornmentType = document.getElementById("enviornmentTypeList").value;
-
-
+    let migrateBatch;
+    let migrateSchema;
+    if (document.getElementById("migrateBatch").checked)
+        migrateBatch = true;
+    if (document.getElementById("migrateSchema").checked)
+        migrateSchema = true;
     if (enviornmentType === "TST") {
-        server = "ERADS12"
+        server = "ERADS12";
+        database = "DWETLTST";
     } else if (enviornmentType === "PRD") {
-        server = "ERADS13"
+        server = "ERADS13";
+        database = "DWETLPRD";
     }
 
     let svnurl = "\\ERA\\trunk\\Releases\\" + datamart + "\\" + releaseVersion + "\\";
@@ -249,15 +267,16 @@ function handleTitle(event) {
     filename = title + ".doc";
     document.getElementById("docTitle").innerHTML = title;
 
-    /* Migrate Points */
-    document.getElementById("ddlsMigrationP").innerHTML = "Back up the DDLS listed below to " + svnurl + "backup\\{ DDLName }.sql";
+    /* Migrate DDLs Points */
+    document.getElementById("migrateDDLOne").innerHTML = "Using your SQL Client log in to the project's schema on " + database;
+    document.getElementById("migrateDDLTwo").innerHTML = migrateSchema ? "Back up the entire schema to " + svnurl + "backup\\{ DDLName }.sql" : "Back up the DDLS listed below to " + svnurl + "backup\\{ DDLName }.sql";
 
     /* Execute SQL Point */
     document.getElementById("executeOne").innerHTML = "Open \\ERA\\trunk\\Releases\\" + datamart + "\\" + releaseVersion + "\\import SQLScript.sql";
 
     /* Backups */
     document.getElementById("backupPre").innerHTML = "<b>Back up entire Batch_" + datamart + " (pre migration)</b>";
-    document.getElementById("migrateDsx").innerHTML = "<b>Migrate DSX to " + datamart + "_" + enviornmentType + "</b>";
+    document.getElementById("migrateDsx").innerHTML = migrateBatch ? "<b>Migrate DSX to " + datamart + "_" + enviornmentType + "</b> (Full batch folder)" : "<b>Migrate DSX to " + datamart + "_" + enviornmentType + "</b>";
     document.getElementById("backupPost").innerHTML = "<b>Back up entire Batch_" + datamart + " (post migration)</b>";
 
     /* Pre Backup Bullet Points */
@@ -279,5 +298,7 @@ function handleTitle(event) {
     document.getElementById("migrateVariableOne").innerHTML = "Open DS Administrator log in to " + server + " and open the environment variables for " + datamart + "_" + enviornmentType;
     document.getElementById("migrateVariableTwo").innerHTML = "Manually migrate the variables listed in the summary of this document";
     document.getElementById("migrateVariableThree").innerHTML = "Make sure to click \"Ok\" once you are done changing the variables";
+
+    handleAlteredDDLS(event);
 
 }
