@@ -1,6 +1,30 @@
 console.log("loading index.js...");
 let filename = "";
 
+function Export2Doc(event, element) {
+    event.preventDefault();
+    var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
+    var postHtml = "</body></html>";
+    var html = preHtml + document.getElementById(element).innerHTML + postHtml;
+
+    var blob = new Blob(['\ufeff', html], {
+        type: 'application/msword'
+    });
+    var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
+    var downloadLink = document.createElement("a");
+    document.body.appendChild(downloadLink);
+
+    if (navigator.msSaveOrOpenBlob) {
+        navigator.msSaveOrOpenBlob(blob, filename);
+    } else {
+        downloadLink.href = url;
+        downloadLink.download = filename;
+        downloadLink.click();
+    }
+
+    document.body.removeChild(downloadLink);
+}
+
 function isDDLEmpty() {
     let newDDLS = document.getElementById("ddlsCreated").value
     let alteredDDLS = document.getElementById("ddlsAltered").value
@@ -43,30 +67,6 @@ isETLEmpty();
 isSpecialInstructionsEmpty();
 isVariableEmpty();
 
-function Export2Doc(event, element) {
-    event.preventDefault();
-    var preHtml = "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>Export HTML To Doc</title></head><body>";
-    var postHtml = "</body></html>";
-    var html = preHtml + document.getElementById(element).innerHTML + postHtml;
-
-    var blob = new Blob(['\ufeff', html], {
-        type: 'application/msword'
-    });
-    var url = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(html);
-    var downloadLink = document.createElement("a");
-    document.body.appendChild(downloadLink);
-
-    if (navigator.msSaveOrOpenBlob) {
-        navigator.msSaveOrOpenBlob(blob, filename);
-    } else {
-        downloadLink.href = url;
-        downloadLink.download = filename;
-        downloadLink.click();
-    }
-
-    document.body.removeChild(downloadLink);
-}
-
 function formListener(event) {
     isDDLEmpty();
     isETLEmpty();
@@ -104,6 +104,12 @@ function formListener(event) {
         case "ddlsAltered":
             handleAlteredDDLS(event);
             break;
+        case "executionList":
+            handleExecutionList(event);
+            break;
+        case "otherExecute":
+            handleOtherExecute(event);
+            break;
         case "specialInstructions":
             handleSpecialInstructions(event);
             break;
@@ -125,7 +131,7 @@ function handleEnvironmentVariablesNew(event) {
     if (environmentVariables != "") {
         for (let variable in environmentVariables) {
             let listItem = document.createElement("li");
-            listItem.innerHTML = environmentVariables[variable];
+            listItem.innerHTML = environmentVariables[variable] + " (New)";
             document.getElementById("environmentVariablesList").appendChild(listItem);
         }
     } else {
@@ -142,7 +148,7 @@ function handleEnvironmentVariablesAltered(event) {
     if (environmentVariables != "") {
         for (let variable in environmentVariables) {
             let listItem = document.createElement("li");
-            listItem.innerHTML = environmentVariables[variable];
+            listItem.innerHTML = environmentVariables[variable] + " (Altered)";
             document.getElementById("environmentVariablesList2").appendChild(listItem);
         }
     } else {
@@ -159,7 +165,7 @@ function handleNewETL(event) {
     if (newSquencesJobs != "") {
         for (let job in newSquencesJobs) {
             let listItem = document.createElement("li");
-            listItem.innerHTML = newSquencesJobs[job];
+            listItem.innerHTML = newSquencesJobs[job] + " (New)";
             document.getElementById("newETLS").appendChild(listItem);
         }
     } else {
@@ -176,7 +182,7 @@ function handleAlteredETL(event) {
     if (alteredSquencesJobs != "") {
         for (let job in alteredSquencesJobs) {
             let listItem = document.createElement("li");
-            listItem.innerHTML = alteredSquencesJobs[job];
+            listItem.innerHTML = alteredSquencesJobs[job] + " (Altered)";
             document.getElementById("alteredETLS").appendChild(listItem);
         }
     } else {
@@ -193,7 +199,7 @@ function handleNewDDLS(event) {
     if (ddlsCreated != "") {
         for (let ddl in ddlsCreated) {
             let listItem = document.createElement("li");
-            listItem.innerHTML = ddlsCreated[ddl];
+            listItem.innerHTML = ddlsCreated[ddl] + " (New)";
             document.getElementById("newDDLS").appendChild(listItem);
         }
     } else {
@@ -212,7 +218,7 @@ function handleAlteredDDLS(event) {
         for (let ddl in ddlsAltered) {
             if (!document.getElementById("migrateSchema").checked) {
                 let listItem = document.createElement("li");
-                listItem.innerHTML = ddlsAltered[ddl];
+                listItem.innerHTML = ddlsAltered[ddl] + " (Altered)";
                 document.getElementById("alteredDDLS").appendChild(listItem);
                 listItem = document.createElement("li");
                 listItem.innerHTML = ddlsAltered[ddl];
@@ -233,10 +239,21 @@ function handleSpecialInstructions(event) {
     document.getElementById("specialInstructionsDoc").innerHTML = specialInstructions;
 }
 
-function handleMigrateBatch(event) {
-
+function handleExecutionList(event) {
+    document.getElementById("otherExecute").style.display = "none";
+    document.getElementById("otherExecute").removeAttribute("required");
+    if (event.target.value === "other") {
+        document.getElementById("otherExecute").style.display = "block";
+        document.getElementById("otherExecute").setAttribute("required", "");
+        document.getElementById("jobExecuteOne").innerHTML = "";
+    } else {
+        document.getElementById("jobExecuteOne").innerHTML = event.target.value;
+    }
 }
 
+function handleOtherExecute(event) {
+    document.getElementById("jobExecuteOne").innerHTML = event.target.value;
+}
 
 function handleTitle(event) {
 
@@ -272,7 +289,7 @@ function handleTitle(event) {
     document.getElementById("migrateDDLTwo").innerHTML = migrateSchema ? "Back up the entire schema to " + svnurl + "backup\\{ DDLName }.sql" : "Back up the DDLS listed below to " + svnurl + "backup\\{ DDLName }.sql";
 
     /* Execute SQL Point */
-    document.getElementById("executeOne").innerHTML = "Open \\ERA\\trunk\\Releases\\" + datamart + "\\" + releaseVersion + "\\import SQLScript.sql";
+    document.getElementById("executeOne").innerHTML = "Open \\ERA\\trunk\\Releases\\" + datamart + "\\" + releaseVersion + "\\import\\"+ datamart + "_" + enviornmentType + "_" + releaseVersion + ".sql";
 
     /* Backups */
     document.getElementById("backupPre").innerHTML = "<b>Back up entire Batch_" + datamart + " (pre migration)</b>";

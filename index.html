@@ -39,6 +39,14 @@
                         <option name="datamart" value = "RESEARCH">RESEARCH</option>
                         <option name="datamart" value = "STUDENT">STUDENT</option>
                      </select>
+                     <label>ETL Execution</label>
+                     <select id = "executionList" name ="executionList" required class="form-control col-3">
+                        <option name="execution" value = "Normal execution per AutoSys schedule">Normal execution per AutoSys schedule</option>
+                        <option name="execution" value = "Call SOC to execute ETLs">Call SOC to execute ETLs</option>
+                        <option name="execution" value = "Execute ETLs via DataStage">Execute ETLs via DataStage</option>
+                        <option name="execution" value = "other">Other</option>
+                     </select><br>
+                     <textarea name="otherExecute" id="otherExecute" class="form-control col-10" style="display:none;"></textarea><br>                
                      <br>
                      <label>Does the migration DSX include the full batch folder?</label>
                      <input type="checkbox" checked data-toggle="toggle" data-onstyle="primary" data-offstyle="danger" data-on="Yes" data-off="No" id="migrateBatch" name="migrateBatch"><br><br>
@@ -75,29 +83,23 @@
                <p><b><u>ETL Migration Summary</u></b></p>
                <ol>
                   <li>DDL Migration</li>
-                  (New DDLs)<br>
                   <ul id="newDDLS">
                     <li>NONE</li>                              
                   </ul>
-                  (Altered DDLs)<br>
                   <ul id="alteredDDLS">  
                     <li>NONE</li>                
                   </ul>
                   <li>Environment Variables</li>
-                  (New Variables)<br>
                   <ul id="environmentVariablesList">
                     <li>NONE</li> 
                   </ul>
-                  (Altered Variables)<br>
                   <ul id="environmentVariablesList2">
                     <li>NONE</li> 
                   </ul>
                   <li>DataStage ETLs</li>
-                  (New ETLs)<br>
                   <ul id="newETLS" >
                     <li>NONE</li>     
                   </ul>
-                  (Altered ETLs)<br>
                   <ul id="alteredETLS" >
                     <li>NONE</li>     
                   </ul>
@@ -116,7 +118,7 @@
                      <li id="migrateDDLOne"></li>
                      <li id="migrateDDLTwo"></li>  
                   </ul>
-                  <ul id="ddlsMigration">
+                  <ul id="ddlsMigration" style="margin-left: 100px;">
                   </ul>
                   <li><b>Execute SQL Script</b></li>
                   <ul>
@@ -156,7 +158,13 @@
                     <li id="migrateVariableTwo"></li>
                     <li id="migrateVariableThree"></li>
                 </ol>
-             </div>            
+             </div> 
+             <div id="jobExecution">
+               <p><b><u>ETL Execution</u></b></p>
+               <ul id="jobExecuteUL">
+                   <li id="jobExecuteOne">Normal execution per AutoSys schedule</li>
+               </ul>
+            </div>               
          </div>
       </div>
       </div>
