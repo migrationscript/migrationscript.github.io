@@ -26,40 +26,48 @@ function Export2Doc(event, element) {
 }
 
 function isDDLEmpty() {
-    let newDDLS = document.getElementById("ddlsCreated").value
-    let alteredDDLS = document.getElementById("ddlsAltered").value
+    let newDDLS = document.getElementById("ddlsCreated").value;
+    let alteredDDLS = document.getElementById("ddlsAltered").value;
     if (newDDLS == "" && alteredDDLS == "") {
         document.getElementById("migrateDDL").style.display = "none";
+        document.getElementById("newDDLS").innerHTML = "<li>NONE</li>";
+        document.getElementById("alteredDDLS").innerHTML = "";
     } else {
         document.getElementById("migrateDDL").style.display = "block";
     }
+
 }
 function isETLEmpty() {
-    let newETLS = document.getElementById("newSquencesJobs").value
-    let alteredETLS = document.getElementById("alteredSquencesJobs").value
+    let newETLS = document.getElementById("newSquencesJobs").value;
+    let alteredETLS = document.getElementById("alteredSquencesJobs").value;
     if (newETLS == "" && alteredETLS == "") {
         document.getElementById("migrateDataStageETL").style.display = "none";
+        document.getElementById("newETLS").innerHTML = "<li>NONE</li>";
+        document.getElementById("alteredETLS").innerHTML = "";
     } else {
         document.getElementById("migrateDataStageETL").style.display = "block";
     }
 }
+function isVariableEmpty() {
+    let newVariables = document.getElementById("environmentVariablesNew").value;
+    let alteredVariables = document.getElementById("environmentVariablesAltered").value;
+    if (newVariables == "" && alteredVariables == "") {
+        document.getElementById("migrateEnvironmentVariables").style.display = "none";
+        document.getElementById("environmentVariablesList").innerHTML = "<li>NONE</li>";
+        document.getElementById("environmentVariablesList2").innerHTML = "";
+    } else {
+        document.getElementById("migrateEnvironmentVariables").style.display = "block";
+    }
+}
 function isSpecialInstructionsEmpty() {
-    let specialInstructions = document.getElementById("specialInstructions").value
+    let specialInstructions = document.getElementById("specialInstructions").value;
     if (specialInstructions == "") {
         document.getElementById("specialInstructionsSection").style.display = "none";
     } else {
         document.getElementById("specialInstructionsSection").style.display = "block";
     }
 }
-function isVariableEmpty() {
-    let newVariables = document.getElementById("environmentVariablesNew").value
-    let alteredVariables = document.getElementById("environmentVariablesAltered").value
-    if (newVariables == "" && alteredVariables == "") {
-        document.getElementById("migrateEnvironmentVariables").style.display = "none";
-    } else {
-        document.getElementById("migrateEnvironmentVariables").style.display = "block";
-    }
-}
+
 
 
 isDDLEmpty();
@@ -68,11 +76,6 @@ isSpecialInstructionsEmpty();
 isVariableEmpty();
 
 function formListener(event) {
-    isDDLEmpty();
-    isETLEmpty();
-    isSpecialInstructionsEmpty();
-    isVariableEmpty();
-
     switch (event.target.name) {
         case "ticketNumber":
             handleTitle(event);
@@ -122,12 +125,18 @@ function formListener(event) {
         default:
             console.log(event.target.value);
     }
+    isDDLEmpty();
+    isETLEmpty();
+    isSpecialInstructionsEmpty();
+    isVariableEmpty();
 }
 
 function handleEnvironmentVariablesNew(event) {
     let environmentVariables = document.getElementById("environmentVariablesNew").value.split("\n");
 
     document.getElementById("environmentVariablesList").innerHTML = "";
+    if (document.getElementById("environmentVariablesAltered").value === "")
+        document.getElementById("environmentVariablesList2").innerHTML = "";
     if (environmentVariables != "") {
         for (let variable in environmentVariables) {
             let listItem = document.createElement("li");
@@ -135,9 +144,7 @@ function handleEnvironmentVariablesNew(event) {
             document.getElementById("environmentVariablesList").appendChild(listItem);
         }
     } else {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = "NONE";
-        document.getElementById("environmentVariablesList").appendChild(listItem);
+        document.getElementById("environmentVariablesList").innerHTML = "";
     }
 }
 
@@ -145,6 +152,8 @@ function handleEnvironmentVariablesAltered(event) {
     let environmentVariables = document.getElementById("environmentVariablesAltered").value.split("\n");
 
     document.getElementById("environmentVariablesList2").innerHTML = "";
+    if (document.getElementById("environmentVariablesNew").value === "")
+        document.getElementById("environmentVariablesList").innerHTML = "";
     if (environmentVariables != "") {
         for (let variable in environmentVariables) {
             let listItem = document.createElement("li");
@@ -152,9 +161,7 @@ function handleEnvironmentVariablesAltered(event) {
             document.getElementById("environmentVariablesList2").appendChild(listItem);
         }
     } else {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = "NONE";
-        document.getElementById("environmentVariablesList2").appendChild(listItem);
+        document.getElementById("environmentVariablesList2").innerHTML = "";
     }
 }
 
@@ -162,6 +169,8 @@ function handleNewETL(event) {
     let newSquencesJobs = document.getElementById("newSquencesJobs").value.split("\n");
 
     document.getElementById("newETLS").innerHTML = "";
+    if (document.getElementById("alteredSquencesJobs").value === "")
+        document.getElementById("alteredETLS").innerHTML = "";
     if (newSquencesJobs != "") {
         for (let job in newSquencesJobs) {
             let listItem = document.createElement("li");
@@ -169,9 +178,7 @@ function handleNewETL(event) {
             document.getElementById("newETLS").appendChild(listItem);
         }
     } else {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = "NONE";
-        document.getElementById("newETLS").appendChild(listItem);
+        document.getElementById("newETLS").innerHTML = "";
     }
 }
 
@@ -179,6 +186,8 @@ function handleAlteredETL(event) {
     let alteredSquencesJobs = document.getElementById("alteredSquencesJobs").value.split("\n");
 
     document.getElementById("alteredETLS").innerHTML = "";
+    if (document.getElementById("newSquencesJobs").value === "")
+        document.getElementById("newETLS").innerHTML = "";
     if (alteredSquencesJobs != "") {
         for (let job in alteredSquencesJobs) {
             let listItem = document.createElement("li");
@@ -186,9 +195,7 @@ function handleAlteredETL(event) {
             document.getElementById("alteredETLS").appendChild(listItem);
         }
     } else {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = "NONE";
-        document.getElementById("alteredETLS").appendChild(listItem);
+        document.getElementById("alteredETLS").innerHTML = "";
     }
 }
 
@@ -196,6 +203,8 @@ function handleNewDDLS(event) {
     let ddlsCreated = document.getElementById("ddlsCreated").value.split("\n");
 
     document.getElementById("newDDLS").innerHTML = "";
+    if (document.getElementById("ddlsAltered").value === "")
+        document.getElementById("alteredDDLS").innerHTML = "";
     if (ddlsCreated != "") {
         for (let ddl in ddlsCreated) {
             let listItem = document.createElement("li");
@@ -203,9 +212,7 @@ function handleNewDDLS(event) {
             document.getElementById("newDDLS").appendChild(listItem);
         }
     } else {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = "NONE";
-        document.getElementById("newDDLS").appendChild(listItem);
+        document.getElementById("newDDLS").innerHTML = "";
     }
 }
 
@@ -214,22 +221,21 @@ function handleAlteredDDLS(event) {
 
     document.getElementById("alteredDDLS").innerHTML = "";
     document.getElementById("ddlsMigration").innerHTML = "";
+    if (document.getElementById("ddlsCreated").value === "")
+        document.getElementById("newDDLS").innerHTML = "";
     if (ddlsAltered != "") {
         for (let ddl in ddlsAltered) {
+            let listItem = document.createElement("li");
+            listItem.innerHTML = ddlsAltered[ddl] + " (Altered)";
+            document.getElementById("alteredDDLS").appendChild(listItem);
             if (!document.getElementById("migrateSchema").checked) {
-                let listItem = document.createElement("li");
-                listItem.innerHTML = ddlsAltered[ddl] + " (Altered)";
-                document.getElementById("alteredDDLS").appendChild(listItem);
                 listItem = document.createElement("li");
                 listItem.innerHTML = ddlsAltered[ddl];
                 document.getElementById("ddlsMigration").appendChild(listItem);
             }
         }
     } else {
-        let listItem = document.createElement("li");
-        listItem.innerHTML = "NONE";
-        document.getElementById("alteredDDLS").appendChild(listItem);
-        listItem = document.createElement("li");
+        document.getElementById("alteredDDLS").innerHTML = "";
         document.getElementById("ddlsMigration").innerHTML = "";
     }
 }
@@ -289,7 +295,7 @@ function handleTitle(event) {
     document.getElementById("migrateDDLTwo").innerHTML = migrateSchema ? "Back up the entire schema to " + svnurl + "backup\\{ DDLName }.sql" : "Back up the DDLS listed below to " + svnurl + "backup\\{ DDLName }.sql";
 
     /* Execute SQL Point */
-    document.getElementById("executeOne").innerHTML = "Open \\ERA\\trunk\\Releases\\" + datamart + "\\" + releaseVersion + "\\import\\"+ datamart + "_" + enviornmentType + "_" + releaseVersion + ".sql";
+    document.getElementById("executeOne").innerHTML = "Open \\ERA\\trunk\\Releases\\" + datamart + "\\" + releaseVersion + "\\import\\" + datamart + "_" + enviornmentType + "_" + releaseVersion + ".sql";
 
     /* Backups */
     document.getElementById("backupPre").innerHTML = "<b>Back up entire Batch_" + datamart + " (pre migration)</b>";
